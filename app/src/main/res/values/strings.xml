@@ -1,4 +1,7 @@
 <resources>
-    <string name="app_name">MapsTechDemo</string>
+    <string name="app_name">StudentDiscountsApp</string>
     <string name="title_activity_maps">Map</string>
+
+    <string name="default_info_title">HELLO</string>
+    <string name="default_info_snippet">This is the default</string>
 </resources>

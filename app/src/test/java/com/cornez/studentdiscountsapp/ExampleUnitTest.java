@@ -1,4 +1,4 @@
-package com.cornez.mapstechdemo;
+package com.cornez.studentdiscountsapp;
 
 import org.junit.Test;
 
