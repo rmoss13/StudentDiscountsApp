@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "632799036107",
+    "firebase_url": "https://studentdiscountsapp.firebaseio.com",
+    "project_id": "studentdiscountsapp",
+    "storage_bucket": "studentdiscountsapp.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:632799036107:android:0ed7f09d67171042",
+        "android_client_info": {
+          "package_name": "com.cornez.studentdiscountsapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "632799036107-7008bolo75l55o2jd9smpvg1j4sapa10.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD5yikKFmL7sjMPaZ6XVTID1Xu7ygvPNTI"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
