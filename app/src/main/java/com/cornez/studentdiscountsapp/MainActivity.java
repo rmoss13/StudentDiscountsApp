@@ -32,6 +32,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 
@@ -43,7 +44,7 @@ public class MainActivity extends AppCompatActivity implements
 
     private static final String TAG = MainActivity.class.getSimpleName();
     private GoogleMap mMap;
-    private ArrayList<Marker> markers;
+    private ArrayList<MarkerOptions> markers;
     private CameraPosition mCameraPosition;
 
     // The entry point to Google Play services, used by the Places API and Fused Location Provider.
@@ -86,7 +87,7 @@ public class MainActivity extends AppCompatActivity implements
         }
         setContentView(R.layout.activity_maps);
 
-        markers = new ArrayList<Marker>();
+        markers = new ArrayList<MarkerOptions>();
         mFirebaseAuth = FirebaseAuth.getInstance();
         mFirebaseUser = mFirebaseAuth.getCurrentUser();
         mDatabase = FirebaseDatabase.getInstance().getReference();
@@ -95,6 +96,10 @@ public class MainActivity extends AppCompatActivity implements
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map1);
         mapFragment.getMapAsync(this);
+
+        //Firebase data setup
+        getFirebaseDataInfo();;
+
         // Do other setup activities here too.
         buildGoogleApiClient();
         mGoogleApiClient.connect();
@@ -254,23 +259,25 @@ public class MainActivity extends AppCompatActivity implements
     public void getFirebaseDataInfo(){
         mUserId = mFirebaseUser.getUid();
         // Use Firebase to populate the list.
-        mDatabase.child("users").child(mUserId).child("items").addChildEventListener(new ChildEventListener() {
+        mDatabase.child("users").child("items").child("marker1").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
-            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+            public void onDataChange(DataSnapshot dataSnapshot) {
                 String title = (String) dataSnapshot.child("title").getValue();
-                double latitude = (double) dataSnapshot.child("latitude").getValue();
-                double longitude = (double) dataSnapshot.child("longitude").getValue();
-                markers.add(mMap.addMarker(new MarkerOptions().position(new LatLng(latitude,longitude)).title(title)));
+                Double latitude = (Double) dataSnapshot.child("latitude").getValue();
+                Double longitude = (Double) dataSnapshot.child("longitude").getValue();
+                markers.add(new MarkerOptions().position(new LatLng(latitude.doubleValue(),longitude.doubleValue())).title(title));
+
+                updateMarkers();
             }
 
             @Override
-            public void onChildChanged(DataSnapshot dataSnapshot, String s) {}
-            @Override
-            public void onChildRemoved(DataSnapshot dataSnapshot) {}
-            @Override
-            public void onChildMoved(DataSnapshot dataSnapshot, String s) {}
-            @Override
             public void onCancelled(DatabaseError databaseError) {}
         });
+    }
+
+    public void updateMarkers(){
+        for(MarkerOptions m: markers){
+            mMap.addMarker(m);
+        }
     }
 }
