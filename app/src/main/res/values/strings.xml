@@ -7,11 +7,21 @@
 
     <string name="password_hint">Password</string>
     <string name="email_hint">Email</string>
+    <string name="sign_up_button_label">Sign Up</string>
+    <string name="signup_error_message">Please make sure you enter an email address and password!</string>
     <string name="signup_error_title">Error!</string>
+    <string name="signup_success">Account successfully created! You can now Login.</string>
     <string name="login_error_message">Please make sure you enter an email address and password!</string>
     <string name="login_error_title">Error!</string>
     <string name="login_button_label">Login</string>
+    <string name="sign_up_text">Sign Up!</string>
     <string name="title_activity_login">Sign in</string>
     <string name="add_item">Add New Item</string>
     <string name="action_logout">Logout</string>
+    <string name="wrong_email_message">This app is currently only for Augustana students! Try again with an Augie email
+    or come back when your school is supported!</string>
+    <string name="action_suggestion">Suggest a Discount</string>
+    <string name="suggestion_title">If you know of a place that has a student discount, submit it right here!</string>
+    <string name="place_text">Business :</string>
+    <string name="address_text">Address</string>
 </resources>

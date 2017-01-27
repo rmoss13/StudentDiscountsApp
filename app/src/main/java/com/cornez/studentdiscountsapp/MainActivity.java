@@ -1,5 +1,6 @@
 package com.cornez.studentdiscountsapp;
 
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
@@ -8,6 +9,8 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
@@ -27,7 +30,6 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -92,6 +94,8 @@ public class MainActivity extends AppCompatActivity implements
         mFirebaseUser = mFirebaseAuth.getCurrentUser();
         mDatabase = FirebaseDatabase.getInstance().getReference();
 
+        getDeviceLocation();
+
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map1);
@@ -112,6 +116,7 @@ public class MainActivity extends AppCompatActivity implements
         if (mGoogleApiClient.isConnected()) {
             getDeviceLocation();
         }
+        getFirebaseDataInfo();
     }
 
     @Override
@@ -229,9 +234,11 @@ public class MainActivity extends AppCompatActivity implements
         }
 
         if (mLocationPermissionGranted) {
+            Log.d(TAG, "Location Granted");
             mMap.setMyLocationEnabled(true);
             mMap.getUiSettings().setMyLocationButtonEnabled(true);
         } else {
+            Log.d(TAG, "Location NOT Granted");
             mMap.setMyLocationEnabled(false);
             mMap.getUiSettings().setMyLocationButtonEnabled(false);
             mCurrentLocation = null;
@@ -257,27 +264,74 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     public void getFirebaseDataInfo(){
-        mUserId = mFirebaseUser.getUid();
-        // Use Firebase to populate the list.
-        mDatabase.child("users").child("items").child("marker1").addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                String title = (String) dataSnapshot.child("title").getValue();
-                Double latitude = (Double) dataSnapshot.child("latitude").getValue();
-                Double longitude = (Double) dataSnapshot.child("longitude").getValue();
-                markers.add(new MarkerOptions().position(new LatLng(latitude.doubleValue(),longitude.doubleValue())).title(title));
+        if(mFirebaseUser == null){
+            loadSignIn();
+        } else {
+            mUserId = mFirebaseUser.getUid();
+            // Use Firebase to populate the list.
+            mDatabase.child("items").addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot topSnapShot) {
+                    for(DataSnapshot snapshot: topSnapShot.getChildren()) {
+                        String title = (String) snapshot.child("title").getValue();
+                        Double latitude = (Double) snapshot.child("latitude").getValue();
+                        Double longitude = (Double) snapshot.child("longitude").getValue();
+                        String discount = (String) snapshot.child("discount").getValue();
+                        markers.add(new MarkerOptions()
+                                .position(new LatLng(latitude.doubleValue(), longitude.doubleValue()))
+                                .title(title)
+                                .snippet(discount));
+                    }
+                    updateMarkers();
+                }
 
-                updateMarkers();
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {}
-        });
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                }
+            });
+        }
     }
 
     public void updateMarkers(){
         for(MarkerOptions m: markers){
             mMap.addMarker(m);
         }
+    }
+
+    //Menu
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.action_logout) {
+            mFirebaseAuth.signOut();
+            loadSignIn();
+        } else if (id == R.id.discount_add){
+            Intent intent = new Intent(this, SuggestionActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(intent);
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+
+
+    public void loadSignIn(){
+        Intent intent = new Intent(this, SignInActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
     }
 }
