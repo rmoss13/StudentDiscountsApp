@@ -24,4 +24,6 @@
     <string name="suggestion_title">If you know of a place that has a student discount, submit it right here!</string>
     <string name="place_text">Business :</string>
     <string name="address_text">Address</string>
+    <string name="city_text">City</string>
+    <string name="discount_text">Discount</string>
 </resources>

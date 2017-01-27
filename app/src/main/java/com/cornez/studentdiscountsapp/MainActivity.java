@@ -37,6 +37,8 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class MainActivity extends AppCompatActivity implements
         OnMapReadyCallback,
@@ -93,6 +95,13 @@ public class MainActivity extends AppCompatActivity implements
         mFirebaseAuth = FirebaseAuth.getInstance();
         mFirebaseUser = mFirebaseAuth.getCurrentUser();
         mDatabase = FirebaseDatabase.getInstance().getReference();
+        String source = getIntent().getStringExtra("Source");
+        if(source !=null) {
+            if (source.equals("From Suggestion")) {
+                pushSuggestion(getIntent().getStringArrayExtra("data"));
+            }
+        }
+
 
         getDeviceLocation();
 
@@ -333,5 +342,24 @@ public class MainActivity extends AppCompatActivity implements
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
+    }
+
+    public void pushSuggestion(String[] data){
+        boolean dataIsEmpty=false;
+        for(int x=0; x<data.length; x++){
+            if(data[x].equals("")) {
+                dataIsEmpty=true;
+            }
+        }
+        data=null;
+        if(data != null) {
+            Map<String, String> post = new HashMap<String, String>();
+            post.put("title", data[0]);
+            post.put("address", data[1]);
+            post.put("city", data[2]);
+            post.put("discount", data[3]);
+            mDatabase.child("suggestions").push().setValue(post);
+            Log.d(TAG,"DATA "+data[0]);
+        }
     }
 }
